@@ -1,0 +1,300 @@
+@ TODO implement tuple unpacking with labels
+@ TODO make it so that parameters can be passed with ( name + : )
+@ TODO special constructor rules for: map, vector, array
+@ TODO special initializer rules for: map, string, boolean, integer, float, vector, array
+@ TODO macro may replace: block, statement, instance, scope
+@ TODO macros final, mutable, unbind, finalize, format, clone, mirror [for ambiguous case], image [for ambiguous case], hashmap, array, vector
+@ TODO add concatinate to parsing
+@ TODO add rebind macro for renaming labels
+
+module macros
+module interrupts
+module vector
+module memory
+
+import vector::(Vector, Index)
+import memory::frame::(Frame)
+import frame::Frame
+
+export (macros, vector, memory)
+export (Vector, Index, other::Item)
+
+label also_testing := "this is a test aswell"
+
+label sctlr_el1_mask: Boolean := true
+
+label sctlr_el1_mask: Integer := 1B
+
+label scr_el3_mask: Integer := 01B
+
+label spsr_el3_mask: Integer := 101B
+
+label test_array: Array<SignedInteger, 8> := array?(1, -2, 3, -4, 5, -6, 7, -8)
+
+label array: Array<Option<Float>, 4> := array?(None, None, Some(5.7), Some(-5.89))
+
+label boolean: Boolean := false || [true && true]
+
+label also_testing: Float<128> := 56.54
+
+label kernel_entry: Function() -> not := {
+
+    alias Number := Integer<64>
+
+    label reeee: Number := 10
+    label other: $Number := $5
+
+    label run: Function(test: Test): not := {
+        loop {}
+    }
+
+    label inner1 := Inner::Some("i am final")
+    label inner2 := &Inner::Invalidated
+    @label inner2 := &mutable Inner::Invalidated @ mutable is implied by the mirror operator
+    label inner2: Integer := mutable 5
+
+    sp_el1 := stack_base.get((6, { return "yes sir" }))
+
+    sctlr_el1 := sctlr_el1_mask
+    scr_el3 | := scr_el3_mask
+    spsr_el3 := spsr_el3_mask
+
+    @debug?({ log?("only seen on debug") })
+
+    elevation_level_1({
+        set_mode(Pin::p40, Mode::output)
+        run(Test::new())
+    })
+}
+
+implement Type {
+
+    public label new: Function() -> Self := {
+
+    }
+}
+
+label main: Function() := match some() {
+    case true -> pass { fib(0, 1) }
+    case false -> pass { fib(2, 3) }
+}
+
+structure Test<T> := Array<T, 8>
+
+label asm: Function() -> not := {
+
+    label test: Array<Integer, 3> := array?(0, 1, 2)
+
+    label thir := clone?(test[1...])
+    label thic := test[5...2]
+    label seco := mutable test[...]
+
+    label final_test := 5 + 1
+    label mutab_test := mutable 5 + 1
+
+    label test := instance.find_image({ return test == 5 }).require()
+    label seconf: Integer<test> := mutable 5
+
+    @ [ first -> cmp:0 | minimum -> cmp:1 ]
+    @ [ last -> cmp:0 | maximum -> cmp:1 | cmp:out -> jump:condition | !first_bound_error -> jump:address ]
+    @ [ cmp:out -> jump:condition | !last_bound_error -> jump:address ]
+}
+
+label test_stuff: Function() := {
+    label array: Array<SignedInteger<64>, 8> := array?(1, 2, 3, 4, 5, 6, 7, 8)
+    label cloned: Array<(Integer, Integer), 8> := clone_array?((1, 2))
+
+    label test: Vector<Integer> := mutable vector?[mutable 4, mutable 5, mutable 6]
+    test.for_each_mirror({ item := mutable 5 })
+
+    label test: Integer<64> := mutable 5
+    test := 6
+    log?("testing formatting {}", test)
+
+    test.find_image({ return item == 13 }).some("expected none: found {}", item)
+    @ if the compiler gets to this point, it should know that test is free
+
+    {
+        label item := mutable "something"
+        label position := mutable Position::new(5, 7, 12)
+
+        @ function will take the least constricting option
+        label needs := test.find_image({ return item == string.length() }).none("expected some: found none") @.expect
+        some_operation?($needs)
+        other_operation?($needs)
+    }
+
+    label test: Boolean := mutable [Test == value || Ree == value] && true
+
+    if [Test: string == value || Ree: string == value] && true {
+
+    }
+
+    alias Test := Tokenizer
+    alias Other := Test
+
+    label sum := Other::new("/code/dw92")
+    label sum: Other := any::new("/code/dw92")
+
+    label value: Integer<8> := 5
+    label ideal: Integer<8> := 5
+
+    label test := mutable 5 + 6 + 7
+    Integer<64>::reverse(&test)
+
+    label rules0: Float<32> := 17.0
+    label rules1: Float<64> := 17.561
+    label rules2: Float<64> := 17.561D
+    label rules2: Float<64> := 17.561Z
+
+    label other := 'newline'
+    label other1 := "{tab}"
+
+    label other2 := mutable format?("some complete {backspace} line {}{}", other, other1)
+    other2.append(format?("some complete {backspace} line {}{}", other, other1))
+
+    match value {
+        case Variant: item -> panic?("inception") @ variant
+        case ideal -> panic?("i expected this") @ comparisson
+
+        @ if we dont pass "invalid", know that value is free to use again (same goes for any case where we dont borrow)
+        case any: invalid -> panic?("this aswell") @ default
+    }
+
+    label inner1 := Inner<String>::Some("i am final")
+    label inner2: Inner<String> := mutable any::Invalidated
+
+    label inner3 := Option<Boolean>::None
+    label inner4: Option<Boolean> := None
+    label test := Test::new("one {open}", 5, mutable None)
+
+    label gotten := match test {
+        case String: string -> {
+            pass some_operation?(string)
+        }
+        case Table: identifier, data -> pass some_operation?(identifier, data)
+        case Template: string -> pass some_operation?(string)
+        case New: identifier -> pass register_new?(identifier)
+        case any: invalid -> panic?("test has invalid data {?}", invalid)
+    }
+
+    if case Template: invalid == &test && maaaybe == true {
+        panic?("test has invalid data {}", invalid)
+    } else case any == &test {
+        panic?("test has invalid data")
+    }
+
+    label maybe: Option<(Integer, Integer)> := None
+    label maybe: Option<(Integer, Integer)> := Some(5, 6)
+
+    label function: Function(test: String) -> Boolean := match maybe {
+        case Some -> pass { return test.is_empty() }
+        case None -> pass { return test.is_full() }
+    }
+
+    label some: Vector<Float<64> := mutable vector?(5.3, 6.1)
+    some.push(110101.001010B)
+
+    label hex: Integer<16> := 5FX
+
+    label result := function()
+
+    test.filter({ return item == 6 })
+
+    label var: Float<64> := 5
+    label var1: Character := mutable clone?(var)
+
+    alias Type := Function(string: String) -> Option<Boolean>
+
+    @label (test: U64, function: Type) := (var, { return (35, Some(string.length == var)) })
+
+    label bool: Boolean := function("some")
+}
+
+label test: Float<32> := 23.0
+
+label vector: Vector<String> := mutable vector?("this", "is", "a", "test")
+
+label other: Option<Boolean> := Some(true)
+
+label map: Map<String, Boolean> := map?("abc", true, "def", false, "ghi", false)
+
+label map: Map<Character, Integer> := mutable map?('a', 1, 's', 2, 'd', 3)
+
+label test: Function(): String := {
+    return implied "this is a test: {}"
+}
+
+structure Position {
+    public line: Integer
+    public offset: Integer
+    public length: Integer
+}
+
+enumeration Inner<T> {
+    Invalidated((String, Position), Other)
+    Some(T)
+    None
+}
+
+implement Position {
+
+    public label new: Function(): Position := {
+        return implied?(0, implied?(0), 0)
+    }
+
+    public label from: Function(line: Integer, offset: Integer, length: Integer): Position := {
+        return implied?(line, offset, length)
+    }
+}
+
+structure K := Position
+
+public enumeration Option<T> {
+    Some(T)
+    None
+}
+
+enumeration Q<T> := Option<T>
+
+alias Internal := Option<Boolean>
+
+label fiftyfifty1: Internal := Internal::None
+label fiftyfifty2: Internal := Internal::Some(true)
+
+public label arguments: Function(implied first: String): Vec<String> := {
+    label test := implied vector?(first, "two")
+    test[0] := mutable format?("this is the {} string", next) @ valid if first is mutable
+    test[1] := mutable format?("this is also {} true", 56) @ invalid
+    return test
+}
+
+@ Box<T> -> memory on heap
+@ Cell<T> -> runtime mutablility
+@ Counter<T> -> runtime reference counter (mut and imut)
+
+type DataCell := Counter<Cell<Data>>
+type DataMap := HashMap<HashKey, DataCell>
+type DataList := Vector<DataCell>
+
+public enumeration Data {
+    Map(Map<Data, Data>)
+    List(Vector<Data>)
+    Path(Vector<Data>)
+    Identifier(TreeString)
+    MetaIdentifier(TreeString)
+    String(TreeString)
+    Character(Character)
+    Integer(Integer)
+    Float(Float)
+    Boolean(Boolean)
+}
+
+public enumeration Token<T> {
+    Keyword(T)
+    Identifier(T)
+    TypeIdentifier(T)
+    Integer(U64)
+    Float(F64)
+    Other
+}

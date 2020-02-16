@@ -1,0 +1,3 @@
+public label allocate: Function<T>() -> Pointer<T> {
+    return Pointer::non_null()
+}

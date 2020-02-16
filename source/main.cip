@@ -1,0 +1,30 @@
+@ TODO implement tempalte validation (looped dependencies)
+@ TODO implement #sort -> takes function path and a container
+@ TODO add #value_equals and #not_value_equals
+@ TODO add #for_tokenize, #for_parse, #for_build, #pre_parse and #pre_build instructions
+@ TODO add reverse iterators && steps for iterate
+@ TODO rename instance to value in iterators
+@ TODO properly add #tokenize and #parse
+@ TODO maybe: put pass parameters into rust instead
+@ TODO maybe: make a fixed capacity tolerance for vectors and check if capacity - (length / BLOCK_SIZE) > tolerance
+@ TODO then release entire block list
+@ TODO add 'spacer' to the number tokenizer
+@ TODO add 'code' for string and character tokenizer to parse character codes
+@ TODO check for duplicate flavors
+@ TODO add sine, cosine and tangent to the testbench
+@ FIX empty for loop breakiing flow stack
+@ FIX ensure instruction
+
+module format
+module vector
+
+public structure Test {
+    public field: Type
+}
+
+label test: Function(test: Some) -> Pointer<String> := {
+    label some := allocate?()              @ same
+    label some := allocate?(String)        @ same
+    memory::write(&some, test)
+    return some
+}

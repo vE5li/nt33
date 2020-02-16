@@ -1,0 +1,62 @@
+@ TODO update ensure statements use positions
+@ TODO implement resolve for the +::, -::, ::+ and ::- operators
+@ TODO add collect wires -> { wire1, wire2, wire3 }
+@ TODO add constant to wire conversion -> #width[#constant] / 5[3]
+@ TODO add single wire to range conversion -> #width[wire] / 5[wire]
+@ TODO registers may also load from wires initially but only if they are tied to high or low
+@ TODO make the components add the passed parameters to their lookup table
+
+constant bit_width := 8
+constant bit_range := #bit_width - 1:0
+
+constant test2 := 1
+constant test1 := 5 + 8 + 9 + '4'
+constant nicer_label := true ? (2:4) : (3:0)
+
+constant negative := -5.2
+constant character := '3'
+constant concat := "some" ~ " other" ~ " test " ~ "that works " ~ (!true || true ? #character : '2')
+constant boolean := true && 4 > 5 && #i_wont_be_resolved
+constant string := "multiline strings work
+and their positions too"
+
+type Once(1)
+type Test(8, "name #" ~ #character)
+
+component HalfAdder(in test_parameter, out other_wires[7:0]) {
+    Wire range_test[0 ::+ 6]
+    Wire test_wires[15:0]
+    other_wires := test_wires[7:0]
+    Adder(test_wires[15:8], other_wires, test_parameter)
+}
+
+component Top(in test: Test) {
+
+    @ wire
+    Wire source
+    Wire clock := source
+    Wire bacon[#bit_width * 2 - 1:0]
+    Wire wires[4:0]
+    Wire ham[7:0] := bacon[8:15]
+    Wire poal[#bit_range]
+
+    @ type
+    Test test := bacon[#bit_range]
+    Once superman := bacon[0]
+    Adder adder(clock)
+
+    @ logical operator
+    Wire test := adder.reeee & clock
+    Wire also_test[1:0] := poal[0:1] & poal[2:3] | poal[4:5] ^ poal[6:7]
+
+    @ register
+    Register some[7:0] := 220
+    Register jonas
+    Wire dog := jonas
+    dog := 1
+
+    @ back offset index
+    Wire stone[5:0]
+    Wire sman := stone[-6]
+    Wire man[5:0] := stone[5:-6]
+}
