@@ -1,0 +1,2 @@
+#!/bin/bash
+seamonkey -p /usr/share/seamonkey/jts3/project -a "$@"

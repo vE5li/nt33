@@ -1,0 +1,2 @@
+#!/bin/bash
+seamonkey -p /usr/share/seamonkey/h0vs/project -a $1 "${PWD##*/}" source/ output/ /
