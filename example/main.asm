@@ -1,5 +1,5 @@
 @ TODO make sure that section names are unique
-@ TODO convert labels, code_sections, memory_sections and modules to maps for calrity
+@ TODO convert labels, code_sections, memory_sections, directives and modules to maps for calrity
 @ TODO maybe: inner memory_map and code_map aswell
 @ TODO add modules on indent -> add move lists on register -> resolve to get accurate registers
 

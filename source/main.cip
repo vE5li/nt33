@@ -12,8 +12,8 @@
 @ TODO add 'code' for string and character tokenizer to parse character codes
 @ TODO check for duplicate flavors
 @ TODO add sine, cosine and tangent to the testbench
-@ FIX empty for loop breakiing flow stack
-@ FIX ensure instruction
+@ TODO make integers and floats infinite
+@ TODO implement error messages for number tokenizer
 
 module format
 module vector
