@@ -44,7 +44,7 @@ label kernel_entry: Function() -> not := {
     label reeee: Number := 10
     label other: $Number := $5
 
-    label run: Function(test: Test): not := {
+    label run: Function(test: Test) -> not := {
         loop {}
     }
 
@@ -221,7 +221,7 @@ label map: Map<String, Boolean> := map?("abc", true, "def", false, "ghi", false)
 
 label map: Map<Character, Integer> := mutable map?('a', 1, 's', 2, 'd', 3)
 
-label test: Function(): String := {
+label test: Function() -> String := {
     return implied "this is a test: {}"
 }
 
@@ -239,11 +239,11 @@ enumeration Inner<T> {
 
 implement Position {
 
-    public label new: Function(): Position := {
+    public label new: Function() -> Position := {
         return implied?(0, implied?(0), 0)
     }
 
-    public label from: Function(line: Integer, offset: Integer, length: Integer): Position := {
+    public label from: Function(line: Integer, offset: Integer, length: Integer) -> Position := {
         return implied?(line, offset, length)
     }
 }
@@ -262,7 +262,7 @@ alias Internal := Option<Boolean>
 label fiftyfifty1: Internal := Internal::None
 label fiftyfifty2: Internal := Internal::Some(true)
 
-public label arguments: Function(implied first: String): Vec<String> := {
+public label arguments: Function(implied first: String) -> Vec<String> := {
     label test := implied vector?(first, "two")
     test[0] := mutable format?("this is the {} string", next) @ valid if first is mutable
     test[1] := mutable format?("this is also {} true", 56) @ invalid
