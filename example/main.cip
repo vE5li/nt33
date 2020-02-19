@@ -37,6 +37,23 @@ label boolean: Boolean := false || [true && true]
 
 label also_testing: Float<128> := 56.54
 
+label conditionals: Function() := {
+
+    label test1 := if 1 == 1 {
+        pass "correct"
+    } else {
+        pass "wrong"
+    }
+
+    label test2 := match 1 == 1 {
+        case true -> pass "correct"
+        case false -> pass "wrong"
+    }
+
+    @ should be a macro so that only the value that is passed will be resolved
+    label test3 := if?(1 == 1, "correct", "wrong")
+}
+
 label kernel_entry: Function() -> not := {
 
     alias Number := Integer<64>
