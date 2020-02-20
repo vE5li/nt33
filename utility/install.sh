@@ -27,8 +27,8 @@ sudo chmod +x /usr/bin/cipher
 
 # install ktl9
 git clone https://github.com/ve5li/ktl9
-sudo cp "$script_path/opal" /usr/bin/opal
-sudo chmod +x /usr/bin/opal
+sudo cp "$script_path/doofenshmirtz" /usr/bin/doofenshmirtz
+sudo chmod +x /usr/bin/doofenshmirtz
 
 # install jts3
 git clone https://github.com/ve5li/jts3
