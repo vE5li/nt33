@@ -6,6 +6,9 @@
 @ TODO macros final, mutable, unbind, finalize, format, clone, mirror [for ambiguous case], image [for ambiguous case], hashmap, array, vector
 @ TODO add concatinate to parsing
 @ TODO add rebind macro for renaming labels
+@ TODO call should match for any instance, not just identifiers
+@ TODO function definition should be valid without labels
+@ TODO add naming parameters before function scopes
 
 module macros
 module interrupts
@@ -67,13 +70,13 @@ label kernel_entry: Function() -> not := {
 
     label inner1 := Inner::Some("i am final")
     label inner2 := &Inner::Invalidated
-    @label inner2 := &mutable Inner::Invalidated @ mutable is implied by the mirror operator
-    label inner2: Integer := mutable 5
+    label inner3 := &mutable Inner::Invalidated @ mutable is implied by the mirror operator
+    label inner4: Integer := mutable 5
 
     sp_el1 := stack_base.get((6, { return "yes sir" }))
 
     sctlr_el1 := sctlr_el1_mask
-    scr_el3 | := scr_el3_mask
+    scr_el3 |= scr_el3_mask
     spsr_el3 := spsr_el3_mask
 
     @debug?({ log?("only seen on debug") })
@@ -94,6 +97,10 @@ implement Type {
 label main: Function() := match some() {
     case true -> pass { fib(0, 1) }
     case false -> pass { fib(2, 3) }
+}
+
+label higher_order: Function(fun: Function(String) -> Function() -> Integer) := {
+    label integer := fun("some")()
 }
 
 structure Test<T> := Array<T, 8>
@@ -123,6 +130,7 @@ label test_stuff: Function() := {
 
     label test: Vector<Integer> := mutable vector?[mutable 4, mutable 5, mutable 6]
     test.for_each_mirror({ item := mutable 5 })
+    test.for_each_mirror((it) { it := mutable 5 }) @ is the same
 
     label test: Integer<64> := mutable 5
     test := 6
@@ -261,6 +269,11 @@ implement Position {
     }
 
     public label from: Function(line: Integer, offset: Integer, length: Integer) -> Position := {
+        return implied?(line, offset, length)
+    }
+
+    @ is the same as from
+    public label from2: Function(Integer, Integer, Integer) -> Position := (line, offset, length) {
         return implied?(line, offset, length)
     }
 }
