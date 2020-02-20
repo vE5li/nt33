@@ -1,18 +1,10 @@
-@ TODO make sure that section names are unique
-@ TODO convert labels, code_sections, memory_sections, directives and modules to maps for calrity
-@ TODO maybe: inner memory_map and code_map aswell
-@ TODO add modules on indent -> add move lists on register -> resolve to get accurate registers
-
 core {
     module instruction
     module selector
-    module comparitor
     module adder
-    module subtractor
-    module inverter
-    register memory[2]
     register data[2]
-    register operant[3]
+    register operant[2]
+    @register memory[2]
 }
 
 define {
@@ -26,13 +18,14 @@ memory main {
     string #command_prefix
 }
 
-code main {
-    main:
-    [ #true -> instruction:condition | .loop -> instruction:jump ]
-    [ 3 -> adder0:in0 | 1 -> adder0:in1 ]
+code fibonacci {
+    start:
+    [ 1 -> data:slot0 | 1 -> data:slot1 ]
 
     .loop:
-    [ #true -> instruction:condition | .loop -> instruction:jump ]
+    [ data:slot0 -> adder0:in0 | data:slot1 -> adder0:in1 ]
+    [ data:slot1 -> data:slot0 | adder0:out -> data:slot1 ]
+    [ .loop -> instruction:jump | #true -> instruction:condition ]
 }
 
 memory_map {
@@ -40,5 +33,5 @@ memory_map {
 }
 
 code_map {
-    #code_offset -> main -> #default
+    #code_offset -> fibonacci -> #default
 }
