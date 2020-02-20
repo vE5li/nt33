@@ -5,19 +5,24 @@
 @ TODO add single wire to range conversion -> #width[wire] / 5[wire]
 @ TODO registers may also load from wires initially but only if they are tied to high or low
 @ TODO make the components add the passed parameters to their lookup table
+@ TODO make zero-width and single-width wires valid
+@ TODO upper bound for ranges should be exclusive so that zero width is possible
 
-constant bit_width := 8
-constant bit_range := #bit_width - 1:0
+@define selector(count) := #clog(#count + 1) - 1:0
+@define source(count) := #bit_width * #count - 1:0
 
-constant test2 := 1
-constant test1 := 5 + 8 + 9 + '4'
-constant nicer_label := true ? (2:4) : (3:0)
+define bit_width := 8
+define bit_range := #bit_width:0
 
-constant negative := -5.2
-constant character := '3'
-constant concat := "some" ~ " other" ~ " test " ~ "that works " ~ (!true || true ? #character : '2')
-constant boolean := true && 4 > 5 && #i_wont_be_resolved
-constant string := "multiline strings work
+define test2 := 1
+define test1 := 5 + 8 + 9 + '4'
+define nicer_label := true ? (2:4) : (3:0)
+
+define negative := -5.2
+define character := '3'
+define concat := "some" ~ " other" ~ " test " ~ "that works " ~ (!true || true ? #character : '2')
+define boolean := true && 4 > 5 && #i_wont_be_resolved
+define string := "multiline strings work
 and their positions too"
 
 type Once(1)
@@ -25,9 +30,9 @@ type Test(8, "name #" ~ #character)
 
 component HalfAdder(in test_parameter, out other_wires[7:0]) {
     Wire range_test[0 ::+ 6]
-    Wire test_wires[15:0]
-    other_wires := test_wires[7:0]
-    Adder(test_wires[15:8], other_wires, test_parameter)
+    Wire test_wires[16:0]
+    other_wires := test_wires[8:0]
+    Adder(test_wires[16:8], other_wires, test_parameter)
 }
 
 component Top(in test: Test) {
@@ -36,8 +41,8 @@ component Top(in test: Test) {
     Wire source
     Wire clock := source
     Wire bacon[#bit_width * 2 - 1:0]
-    Wire wires[4:0]
-    Wire ham[7:0] := bacon[8:15]
+    Wire wires[5:0]
+    Wire ham[8:0] := bacon[8:16]
     Wire poal[#bit_range]
 
     @ type
@@ -47,16 +52,16 @@ component Top(in test: Test) {
 
     @ logical operator
     Wire test := adder.reeee & clock
-    Wire also_test[1:0] := poal[0:1] & poal[2:3] | poal[4:5] ^ poal[6:7]
+    Wire also_test[2:0] := poal[0:2] & poal[2:4] | poal[4:6] ^ poal[6:8]
 
     @ register
-    Register some[7:0] := 220
+    Register some[8:0] := 220
     Register jonas
     Wire dog := jonas
     dog := 1
 
     @ back offset index
-    Wire stone[5:0]
+    Wire stone[6:0]
     Wire sman := stone[-6]
-    Wire man[5:0] := stone[5:-6]
+    Wire man[6:0] := stone[6:-6]
 }
