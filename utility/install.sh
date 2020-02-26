@@ -3,7 +3,7 @@
 # create seamonkey directory if its missing
 if [ ! -d /usr/share/seamonkey ]; then
     sudo mkdir /usr/share/seamonkey &&
-    sudo chown "$USER" /usr/share/seamonkey &&
+    sudo chown "$USER" /usr/share/seamonkey || exit 1
 fi
 
 # get path to untility folder
