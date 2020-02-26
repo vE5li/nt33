@@ -1,36 +1,55 @@
 #!/bin/bash
 
-# make sure that seamonkey is not already installed
+# create seamonkey directory if its missing
+if [ ! -d /usr/share/seamonkey ]; then
+    sudo mkdir /usr/share/seamonkey &&
+    sudo chown "$USER" /usr/share/seamonkey &&
+fi
 
-# install rust if its missing
-
-# create directory
+# get path to untility folder
 script_path="$( cd "$(dirname "$0")" ; pwd -P )"
-sudo mkdir /usr/share/seamonkey &&
-sudo chown "$USER" /usr/share/seamonkey &&
 cd /usr/share/seamonkey &&
 
 # install igt5
-git clone https://github.com/ve5li/igt5 &&
-cd igt5 &&
-cargo build &&
-sudo cp target/debug/igt5 /usr/bin/seamonkey &&
-cd .. &&
+if [ ! -d igt5 ]; then
+    git clone https://github.com/ve5li/igt5 &&
+fi
 
 # install qtc8
-git clone https://github.com/ve5li/qtc8 &&
+if [ ! -d qtc8 ]; then
+    git clone https://github.com/ve5li/qtc8 &&
+fi
 
 # install h0vs
-git clone https://github.com/ve5li/h0vs &&
-sudo cp "$script_path/cipher" /usr/bin/cipher &&
-sudo chmod +x /usr/bin/cipher &&
+if [ ! -d h0vs ]; then
+    git clone https://github.com/ve5li/h0vs &&
+    sudo cp "$script_path/cipher" /usr/bin/cipher &&
+    sudo chmod +x /usr/bin/cipher &&
+fi
 
 # install ktl9
-git clone https://github.com/ve5li/ktl9 &&
-sudo cp "$script_path/doofenshmirtz" /usr/bin/doofenshmirtz &&
-sudo chmod +x /usr/bin/doofenshmirtz &&
+if [ ! -d ktl9 ]; then
+    git clone https://github.com/ve5li/ktl9 &&
+    sudo cp "$script_path/doofenshmirtz" /usr/bin/doofenshmirtz &&
+    sudo chmod +x /usr/bin/doofenshmirtz &&
+fi
 
 # install jts3
-git clone https://github.com/ve5li/jts3 &&
-sudo cp "$script_path/entleman" /usr/bin/entleman &&
-sudo chmod +x /usr/bin/entleman
+if [ ! -d jts3 ]; then
+    git clone https://github.com/ve5li/jts3 &&
+    sudo cp "$script_path/entleman" /usr/bin/entleman &&
+    sudo chmod +x /usr/bin/entleman &&
+fi
+
+# install rust if its missing
+if [ ! -f /usr/bin/cargo ]; then
+    echo "cargo was not found on your system. running rustup..."
+    echo "please remember that seamonkey requires the nightly toolchain to compile"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
+
+# compile igt5
+if [ ! -f /usr/bin/seamonkey ]; then
+    cd igt5 && cargo build &&
+    sudo cp target/debug/igt5 /usr/bin/seamonkey
+fi
