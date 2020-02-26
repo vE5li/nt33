@@ -12,33 +12,33 @@ cd /usr/share/seamonkey &&
 
 # install igt5
 if [ ! -d igt5 ]; then
-    git clone https://github.com/ve5li/igt5 &&
+    git clone https://github.com/ve5li/igt5 || exit 1
 fi
 
 # install qtc8
 if [ ! -d qtc8 ]; then
-    git clone https://github.com/ve5li/qtc8 &&
+    git clone https://github.com/ve5li/qtc8 || exit 1
 fi
 
 # install h0vs
 if [ ! -d h0vs ]; then
     git clone https://github.com/ve5li/h0vs &&
     sudo cp "$script_path/cipher" /usr/bin/cipher &&
-    sudo chmod +x /usr/bin/cipher &&
+    sudo chmod +x /usr/bin/cipher || exit 1
 fi
 
 # install ktl9
 if [ ! -d ktl9 ]; then
     git clone https://github.com/ve5li/ktl9 &&
     sudo cp "$script_path/doofenshmirtz" /usr/bin/doofenshmirtz &&
-    sudo chmod +x /usr/bin/doofenshmirtz &&
+    sudo chmod +x /usr/bin/doofenshmirtz || exit 1
 fi
 
 # install jts3
 if [ ! -d jts3 ]; then
     git clone https://github.com/ve5li/jts3 &&
     sudo cp "$script_path/entleman" /usr/bin/entleman &&
-    sudo chmod +x /usr/bin/entleman &&
+    sudo chmod +x /usr/bin/entleman || exit 1
 fi
 
 # install rust if its missing
@@ -51,5 +51,5 @@ fi
 # compile igt5
 if [ ! -f /usr/bin/seamonkey ]; then
     cd igt5 && cargo build &&
-    sudo cp target/debug/igt5 /usr/bin/seamonkey
+    sudo cp target/debug/igt5 /usr/bin/seamonkey || exit 1
 fi
