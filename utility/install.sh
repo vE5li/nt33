@@ -51,7 +51,8 @@ if [ ! -d "$HOME/.cargo" ]; then
     echo -e "\ncargo was not found on your system. running rustup..."
     echo -e "please remember that seamonkey requires the nightly toolchain to compile\n"
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&
-    source "$HOME/.cargo/env"
+    source "$HOME/.cargo/env" &&
+    echo -e "\ncargo installed successfully\n"
 fi
 
 # compile igt5
