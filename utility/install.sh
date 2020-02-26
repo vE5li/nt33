@@ -47,10 +47,11 @@ if [ ! -d jts3 ]; then
 fi
 
 # install rust if its missing
-if [ ! -f /usr/bin/cargo ]; then
+if [ ! -f "$HOME/.cargo" ]; then
     echo -e "\ncargo was not found on your system. running rustup..."
     echo -e "please remember that seamonkey requires the nightly toolchain to compile\n"
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&
+    source "$HOME/.cargo/env"
 fi
 
 # compile igt5
