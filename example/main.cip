@@ -9,6 +9,14 @@
 @ TODO call should match for any instance, not just identifiers
 @ TODO function definition should be valid without labels
 @ TODO add naming parameters before function scopes
+@ TODO add scope keyword to unnamed scopes
+@ TODO add derive keyword -> use instead of implement
+@ TODO add reference keyword -> use to get either a mirror or an image
+@ TODO move mutable, final and reference to the type on function parameters
+@ TODO add ! to types as a way of specifying that the type needs to implement a certain type
+@ TODO add sytax for importing and exporting from super and root
+@ TODO add raw macro for values that should not be dereferenced
+@ .clone uses implied but clone? keeps the mutablility of the original value
 
 module macros
 module interrupts
@@ -128,7 +136,7 @@ label test_stuff: Function() := {
     label array: Array<SignedInteger<64>, 8> := array?(1, 2, 3, 4, 5, 6, 7, 8)
     label cloned: Array<(Integer, Integer), 8> := clone_array?((1, 2))
 
-    label test: Vector<Integer> := mutable vector?[mutable 4, mutable 5, mutable 6]
+    label test: Vector<Integer> := mutable vector?(mutable 4, mutable 5, mutable 6)
     test.for_each_mirror({ item := mutable 5 })
     test.for_each_mirror((it) { it := mutable 5 }) @ is the same
 
@@ -139,7 +147,7 @@ label test_stuff: Function() := {
     test.find_image({ return item == 13 }).some("expected none: found {}", item)
     @ if the compiler gets to this point, it should know that test is free
 
-    {
+    scope {
         label item := mutable "something"
         label position := mutable Position::new(5, 7, 12)
 
@@ -292,7 +300,7 @@ alias Internal := Option<Boolean>
 label fiftyfifty1: Internal := Internal::None
 label fiftyfifty2: Internal := Internal::Some(true)
 
-public label arguments: Function(implied first: String) -> Vec<String> := {
+public label arguments: Function(first: implied String) -> Vec<String> := {
     label test := implied vector?(first, "two")
     test[0] := mutable format?("this is the {} string", next) @ valid if first is mutable
     test[1] := mutable format?("this is also {} true", 56) @ invalid
