@@ -14,9 +14,16 @@
 @ TODO add reference keyword -> use to get either a mirror or an image
 @ TODO move mutable, final and reference to the type on function parameters
 @ TODO add ! to types as a way of specifying that the type needs to implement a certain type
-@ TODO add sytax for importing and exporting from super and root
+@ TODO add sytax for importing and exporting from super, root and base
 @ TODO add raw macro for values that should not be dereferenced
+@ TODO add -n flag for renaming the final program
+
 @ .clone uses implied but clone? keeps the mutablility of the original value
+@ intrinsic types like Character, Integer and Float can always be extended through implement
+@ macro types: Type, TypeIdentifier, Identifier, Instance, List
+@ derivable: Clone, Copy, Debug, Equal, New
+@ return and pass also use the infered mutablity by default!!
+@ copy can take any mutablity regardless of the original values mutablity
 
 module macros
 module interrupts

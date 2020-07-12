@@ -14,6 +14,16 @@
 @ TODO add sine, cosine and tangent to the testbench
 @ TODO implement error messages for number tokenizer
 @ TODO add invalid_instruction_suggest
+@ TODO add number and literal as parser pieces
+@ TODO make VectorString include unicode
+@ TODO add rand instruction
+@ TODO add sloppy character and string parsing (rust lifetimes)
+@ TODO add rotate_left and rotate_right instructions
+@ TODO add sign instruction (return 1, 0 or -1)
+@ TODO add explicit types (rust f32, f16, u32, etc)
+@ TODO add float suffix
+@ TODO output tokenzer errors (multiple)
+@ TODO return flags from tokenize instead of printing them
 
 module format
 module vector

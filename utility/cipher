@@ -1,2 +1,2 @@
 #!/bin/bash
-seamonkey -p /usr/share/seamonkey/h0vs/project -a $1 "${PWD##*/}" source/ output/ /
+seamonkey -p /usr/share/seamonkey/h0vs/compiler.data -a $1 "${PWD##*/}" source/ output/ /

@@ -28,7 +28,7 @@ and their positions too"
 type Once(1)
 type Test(8, "name #" ~ #character)
 
-component HalfAdder(in test_parameter, out other_wires[7:0]) {
+component HalfAdder(in test_parameter, out other_wires[8:0]) {
     Wire range_test[0 ::+ 6]
     Wire test_wires[16:0]
     other_wires := test_wires[8:0]
@@ -40,7 +40,7 @@ component Top(in test: Test) {
     @ wire
     Wire source
     Wire clock := source
-    Wire bacon[#bit_width * 2 - 1:0]
+@    Wire bacon[#bit_width * 2 - 1:0]
     Wire wires[5:0]
     Wire ham[8:0] := bacon[8:16]
     Wire poal[#bit_range]
