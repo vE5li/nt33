@@ -10,6 +10,12 @@ fi
 script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 cd /usr/share/seamonkey &&
 
+# install dst6
+if [ ! -d dst6 ]; then
+    git clone https://github.com/ve5li/dst6 &&
+    echo -e "\ndst6 installed successfully\n"
+fi
+
 # install igt5
 if [ ! -d igt5 ]; then
     git clone https://github.com/ve5li/igt5 &&
