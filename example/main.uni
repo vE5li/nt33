@@ -1,13 +1,3 @@
-@ TODO update ensure statements use positions
-@ TODO implement resolve for the +::, -::, ::+ and ::- operators
-@ TODO add collect wires -> { wire1, wire2, wire3 }
-@ TODO add constant to wire conversion -> #width[#constant] / 5[3]
-@ TODO add single wire to range conversion -> #width[wire] / 5[wire]
-@ TODO registers may also load from wires initially but only if they are tied to high or low
-@ TODO make the components add the passed parameters to their lookup table
-@ TODO make zero-width and single-width wires valid
-@ TODO upper bound for ranges should be exclusive so that zero width is possible
-
 @define selector(count) := #clog(#count + 1) - 1:0
 @define source(count) := #bit_width * #count - 1:0
 

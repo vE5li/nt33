@@ -1,40 +1,50 @@
-@ TODO implement tempalte validation (looped dependencies)
-@ TODO implement #sort -> takes function path and a container
-@ TODO add #value_equals and #not_value_equals
-@ TODO add #for_tokenize, #for_parse, #for_build, #pre_parse and #pre_build instructions
-@ TODO add reverse iterators && steps for iterate
-@ TODO rename instance to value in iterators
-@ TODO properly add #tokenize and #parse
-@ TODO maybe: put pass parameters into rust instead
-@ TODO maybe: make a fixed capacity tolerance for vectors and check if capacity - (length / BLOCK_SIZE) > tolerance
-@ TODO then release entire block list
-@ TODO add 'spacer' to the number tokenizer
-@ TODO add 'code' for string and character tokenizer to parse character codes
-@ TODO check for duplicate flavors
-@ TODO add sine, cosine and tangent to the testbench
-@ TODO implement error messages for number tokenizer
-@ TODO add invalid_instruction_suggest
-@ TODO add number and literal as parser pieces
-@ TODO make VectorString include unicode
-@ TODO add rand instruction
-@ TODO add sloppy character and string parsing (rust lifetimes)
-@ TODO add rotate_left and rotate_right instructions
-@ TODO add sign instruction (return 1, 0 or -1)
-@ TODO add explicit types (rust f32, f16, u32, etc)
-@ TODO add float suffix
-@ TODO output tokenzer errors (multiple)
-@ TODO return flags from tokenize instead of printing them
-
 module format
 module vector
 
-public structure Test {
-    public field: Type
+public structure Vector {
+    pointer: $Character
+    length: Integer
+    capacity: Integer
 }
 
-label test: Function(test: Some) -> Pointer<String> := {
-    label some := allocate?()              @ same
-    label some := allocate?(String)        @ same
-    memory::write(&some, test)
-    return some
+public structure String {
+    data: Vector
 }
+
+public structure Source {
+    public source: String
+    public file: String
+    public line: Integer
+    public character: Integer
+    public length: Integer
+}
+
+public structure Test {
+    public test: Integer
+    public aliased: $Alias
+    public aliased: $Meow
+}
+
+alias Alias := Source
+
+alias Meow := Alias
+
+label other: Test := "string test"
+
+implement Test {
+
+    @public label new: Function() -> Self := {
+    @    return implied?(5)
+    @}
+}
+
+@label testing: Function(test: Some) -> Pointer<String> := {
+@    label some1 := allocate?()              @ same
+@    label some2 := allocate?(String)        @ same
+@    memory::write(&some1, test)
+@    return some2
+@}
+
+@label main: Function() := {
+@    label test := Test::new()
+@}
