@@ -2,6 +2,7 @@ core {
     module instruction
     module selector
     module adder
+    module inverter
     module comparitor
     register data[2]
     register memory[2]
@@ -30,7 +31,12 @@ code fibonacci {
     .loop:
     [ data:slot0 -> adder0:in0 | data:slot1 -> adder0:in1 ]
     [ data:slot1 -> data:slot0 | adder0:out -> data:slot1 ]
-    [ .loop -> instruction:jump | #true -> instruction:condition ]
+    [ adder0:overflow -> comparitor0:in0 | #true -> comparitor0:in1 ]
+    [ comparitor0:equal -> inverter0:in ]
+    [ .loop -> instruction:jump | inverter0:out -> instruction:condition ]
+
+    .done:
+    [ .done -> instruction:jump | #true -> instruction:condition ]
 }
 
 code {
