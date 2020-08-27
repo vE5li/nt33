@@ -69,7 +69,7 @@ label new_test: Function() := {
         case 3 -> pass tuples4()
     }
 
-    print_line?(result.0) @ valid
+    print_line?(result.1) @ valid
     print_line?(result.name) @ invalid because tuples4 does not have matching labels
 
     @ enumerations with anonymous structs
@@ -178,8 +178,10 @@ label test_stuff: Function() := {
 
     label test: Boolean := mutable [Test == value || Ree == value] && true
 
-    if [Test: string == value || Ree: string == value] && true {
-
+    if [case Test: string == value || case Ree: string == value] && true {
+        iterate string.length() { @ same as 1...string.length()
+            print_line?(string.remove(1))
+        }
     }
 
     alias Test := Tokenizer
@@ -292,7 +294,7 @@ enumeration Inner<T> {
 implement Position {
 
     public label new: Function() -> Position := {
-        return implied?(0, implied?(0), 0)
+        return implied?(1, implied?(1), 1)
     }
 
     public label from: Function(line: Integer, offset: Integer, length: Integer) -> Position := {
@@ -330,9 +332,9 @@ public label arguments: Function(first: implied String) -> Vec<String> := {
 @ Cell<T> -> runtime mutablility
 @ Counter<T> -> runtime reference counter (mut and imut)
 
-type DataCell := Counter<Cell<Data>>
-type DataMap := HashMap<HashKey, DataCell>
-type DataList := Vector<DataCell>
+alias DataCell := Counter<Cell<Data>>
+alias DataMap := HashMap<HashKey, DataCell>
+alias DataList := Vector<DataCell>
 
 public enumeration Data {
     Map(Map<Data, Data>)
