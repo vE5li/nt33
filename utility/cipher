@@ -1,2 +1,2 @@
 #!/bin/bash
-seamonkey -p /usr/share/seamonkey/h0vs/compiler.data -a "${PWD##*/}" $@
+seashell -p /usr/share/kami/cipher/compiler.data -a "${PWD##*/}" $@

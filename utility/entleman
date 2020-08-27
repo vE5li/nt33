@@ -1,2 +1,2 @@
 #!/bin/bash
-seamonkey -p /usr/share/seamonkey/jts3/compiler.data -a "$@"
+seashell -p /usr/share/kami/entleman/compiler.data -a "$@"

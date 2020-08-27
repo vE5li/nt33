@@ -1,2 +1,2 @@
 #!/bin/bash
-seamonkey -p /usr/share/seamonkey/ktl9/compiler.data -a "$@"
+seashell -p /usr/share/kami/doofenshmirtz/compiler.data -a "$@"
