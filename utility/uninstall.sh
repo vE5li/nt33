@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# delete kami
-sudo rm -rf /usr/share/kami
+# delete tortoise
+sudo rm -rf /usr/share/tortoise
 
 # remove start scripts
 sudo rm /usr/bin/seashell

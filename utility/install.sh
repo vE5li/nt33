@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# create kami directory if its missing
-if [ ! -d /usr/share/kami ]; then
-    sudo mkdir /usr/share/kami &&
-    sudo chown "$USER" /usr/share/kami
+# create tortoise directory if its missing
+if [ ! -d /usr/share/tortoise ]; then
+    sudo mkdir /usr/share/tortoise &&
+    sudo chown "$USER" /usr/share/tortoise
 fi
 
 # get path to untility folder
 script_path="$( cd "$(dirname "$0")" ; pwd -P )"
-cd /usr/share/kami &&
+cd /usr/share/tortoise &&
 echo -e "\n"
 
 # install seamonkey

@@ -1,2 +1,2 @@
 #!/bin/bash
-seashell -p /usr/share/kami/cipher/compiler.data -a "${PWD##*/}" $@
+seashell -p /usr/share/tortoise/cipher/compiler.data -a "${PWD##*/}" $@
