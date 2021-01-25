@@ -1,2 +1,2 @@
 #!/bin/bash
-seashell -p /usr/share/tortoise/entleman/compiler.data -a "$@"
+seashell -p /usr/share/entleman/data/compiler.data -a "$@"
