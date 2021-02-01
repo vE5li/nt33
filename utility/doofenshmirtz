@@ -1,2 +1,2 @@
 #!/bin/bash
-seashell -p /usr/share/doofenshmirtz/data/compiler.data -a "$@"
+seashell -p /usr/share/doofenshmirtz/data/compiler.data -a $@
