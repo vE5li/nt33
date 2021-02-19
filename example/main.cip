@@ -1,369 +1,152 @@
-module macros
-module interrupts
-module vector
-module memory
+@ line comment
+@@ block comment @@
 
-import vector::(Vector, Index)
-import memory::frame::(Frame)
-import frame::Frame
+@ include other modules
+module format
 
-export (macros, vector, memory)
-export (Vector, Index, other::Item)
+@ include other modules with a different name
+module vector as vector2
 
-label also_testing := "this is a test aswell"
+@ import single items
+import format::comma_seperated_list
 
-label sctlr_el1_mask: Boolean := true
+@ import everything in a namespace
+import format::string::any
 
-label sctlr_el1_mask: Integer := 1B
+@ branching in every way
+import format::integer::(binary, hexadecimal, other::any)
 
-label scr_el3_mask: Integer := 01B
+@ export
+export (format, binary, hexadecimal)
 
-label spsr_el3_mask: Integer := 101B
+@ types can be annotated on the left
+label string0: String := "label with type annotation"
 
-label test_array: Array<SignedInteger, 8> := array?(1, -2, 3, -4, 5, -6, 7, -8)
+@ ...but can also be left out completely
+label string1 := "label without type annotation"
 
-label array: Array<Option<Float>, 4> := array?(None, None, Some(5.7), Some(-5.89))
+@ static variables can also be mutable
+label string_mutable := mutable "static mutable string"
 
-label boolean: Boolean := false || [true && true]
+@ concatinate literals
+@label string_concatinated := "concatinated" ~ ' ' ~ "string"
 
-label also_testing: Float<128> := 56.54
+@ special characters are words wrapped in {}
+label string_zero_terminated := "zero terminated string{null}"
 
-label conditionals: Function() := {
+@ ...and in characters just words
+label character_null := 'null'
 
-    label test1 := if 1 == 1 {
-        pass "correct"
-    } else {
-        pass "wrong"
-    }
+@ integers
+label integer_decimal: Integer := 16
 
-    label test2 := match 1 == 1 {
-        case true -> pass "correct"
-        case false -> pass "wrong"
-    }
+@ different formats are written like
+label integer_binary0: Integer := 0b1000
 
-    @ should be a macro so that only the value that is passed will be resolved
-    label test3 := if?(1 == 1, "correct", "wrong")
+@ ...or like
+@label integer_binary1: Integer := 1000B
+
+@ signed integers
+label integer_signed: SignedInteger := -16
+
+@ integers with specific size
+label integer_32_bit: Integer<32> := 16
+
+@ ...same syntax apply to floats
+label float_mutable_16_bit: Float<16> := mutable 16.0
+
+@ boolean
+label boolean0 := true
+
+@ boolean with condition
+label boolean1 := true && false || true
+
+@ boolean with comparisson resolved at runtime
+label boolean_compiletime_comparisson := integer_decimal == 16
+
+@ arrays can be created through the array macro
+label array_with_annotation: Array<String, 3> := array?("one", "two", mutable "three")
+
+@ the type can of course be left out
+label array := mutable array?("one", "two", mutable "three")
+
+@ tuples can be defined like this
+label tuple_with_annotation: (String, Integer) := ("one", 1)
+
+@ tuples can also have labels that can be set in the type
+label tuple_with_labels: (key: String, value: Integer) := ("one", 1)
+
+@ ...or in the instance
+label tuple_with_labels: (key: String, value: Integer) := (key: "one", value: 1)
+
+@ the instance can also overwrite the types field names
+label tuple_with_labels: (key: String, value: Integer) := (new_key: "one", new_value: 1)
+
+@ labels, structures, enumerations and trais can all be marked as public
+public label string_public := "public string"
+
+@ structure
+structure Circle {
+
+    @ fields can be marked with public
+    public position_x: Integer
+    public position_y: Integer
+    radius: Integer
 }
 
-label match_iterate: Function(test: Vector<String>) := {
+@ enumeration with template
+enumeration ErrorOption<T> {
 
-    @ iterate test and match each item
-    match iterate test.iterator() {
-        case "some" => panic?("some")
-        case "other" => panic?("other")
-        case any: invalid => panic?("invalid")
-    }
-}
-
-label new_test: Function() := {
-
-    @ implied function type
-    label test := { return "test" }
-    test()
-
-    @ mutable scope
-    label other := mutable { return 2 }
-    other := { return 5 }
-    other()
-
-    @ tuples with labels
-    label tuples1: Function() -> (name: String, value: Integer) := { return implied ("test", 6) } @ same
-    label tuples2: Function() -> (name: String, value: Integer) := { return implied (one: "test", 6) } @ same
-    label tuples3: Function() -> (String, Integer) := { return implied (name: "test", value: 6) } @ same
-    label tuples4: Function() -> (String, Integer) := { return implied ("test", 6) }
-
-    label result := match rand(0, 3) {
-        case 0 -> pass tuples1()
-        case 1 -> pass tuples2()
-        case 2 -> pass tuples3()
-        case 3 -> pass tuples4()
-    }
-
-    print_line?(result.1) @ valid
-    print_line?(result.name) @ invalid because tuples4 does not have matching labels
-
-    @ enumerations with anonymous structs
-    enumeration Status<T> {
-        Success(T)
-        Error{ error: Error, position: Position, solution: Option<Solution> }
-    }
-
-    match some_random_status() {
-        case Success: value -> operate_on_value?(value)
-        case Error: error, solution -> error_suggest?(error, solution)
-    }
-}
-
-label kernel_entry: Function() -> not := {
-
-    alias Number := Integer<64>
-
-    label reeee: Number := 10
-    label other: $Number := $5
-
-    label run: Function(test: Test) -> not := {
-        loop {}
-    }
-
-    label inner1 := Inner::Some("i am final")
-    label inner2 := &Inner::Invalidated
-    label inner3 := &mutable Inner::Invalidated @ mutable is implied by the mirror operator
-    label inner4: Integer := mutable 5
-
-    sp_el1 := stack_base.get((6, { return "yes sir" }))
-
-    sctlr_el1 := sctlr_el1_mask
-    scr_el3 |= scr_el3_mask
-    spsr_el3 := spsr_el3_mask
-
-    @debug?({ log?("only seen on debug") })
-
-    elevation_level_1({
-        set_mode(Pin::p40, Mode::output)
-        run(Test::new())
-    })
-}
-
-implement Type {
-
-    public label new: Function() -> Self := {
-
-    }
-}
-
-label main: Function() := match some() {
-    case true -> pass { fib(0, 1) }
-    case false -> pass { fib(2, 3) }
-}
-
-label higher_order: Function(fun: Function(String) -> Function() -> Integer) := {
-    label integer := fun("some")()
-}
-
-structure Test<T> := Array<T, 8>
-
-label asm: Function() -> not := {
-
-    label test: Array<Integer, 3> := array?(0, 1, 2)
-
-    label thir := clone?(test[1...])
-    label thic := test[5...2]
-    label seco := mutable test[...]
-
-    label final_test := 5 + 1
-    label mutab_test := mutable 5 + 1
-
-    label test := instance.find_image({ return test == 5 }).require()
-    label seconf: Integer<test> := mutable 5
-
-    @ [ first -> cmp:0 | minimum -> cmp:1 ]
-    @ [ last -> cmp:0 | maximum -> cmp:1 | cmp:out -> jump:condition | !first_bound_error -> jump:address ]
-    @ [ cmp:out -> jump:condition | !last_bound_error -> jump:address ]
-}
-
-label test_stuff: Function() := {
-    label array: Array<SignedInteger<64>, 8> := array?(1, 2, 3, 4, 5, 6, 7, 8)
-    label cloned: Array<(Integer, Integer), 8> := clone_array?((1, 2))
-
-    label test: Vector<Integer> := mutable vector?(mutable 4, mutable 5, mutable 6)
-    test.for_each_mirror({ item := mutable 5 })
-    test.for_each_mirror((it) { it := mutable 5 }) @ is the same
-
-    label test: Integer<64> := mutable 5
-    test := 6
-    log?("testing formatting {}", test)
-
-    test.find_image({ return item == 13 }).some("expected none: found {}", item)
-    @ if the compiler gets to this point, it should know that test is free
-
-    scope {
-        label item := mutable "something"
-        label position := mutable Position::new(5, 7, 12)
-
-        @ function will take the least constricting option
-        label needs := test.find_image({ return item == string.length() }).none("expected some: found none") @.expect
-        some_operation?($needs)
-        other_operation?($needs)
-    }
-
-    label test: Boolean := mutable [Test == value || Ree == value] && true
-
-    if [case Test: string == value || case Ree: string == value] && true {
-        iterate string.length() { @ same as 1...string.length()
-            print_line?(string.remove(1))
-        }
-    }
-
-    alias Test := Tokenizer
-    alias Other := Test
-
-    label sum := Other::new("/code/dw92")
-    label sum: Other := any::new("/code/dw92")
-
-    label value: Integer<8> := 5
-    label ideal: Integer<8> := 5
-
-    label test := mutable 5 + 6 + 7
-    Integer<64>::reverse(&test)
-
-    label rules0: Float<32> := 17.0
-    label rules1: Float<64> := 17.561
-    label rules2: Float<64> := 17.561D
-    label rules2: Float<64> := 17.561Z
-
-    label other := 'newline'
-    label other1 := "{tab}"
-
-    label other2 := mutable format?("some complete {backspace} line {}{}", other, other1)
-    other2.append(format?("some complete {backspace} line {}{}", other, other1))
-
-    match value {
-        case Variant: item -> panic?("inception") @ variant
-        case ideal -> panic?("i expected this") @ comparisson
-
-        @ if we dont pass "invalid", know that value is free to use again (same goes for any case where we dont borrow)
-        case any: invalid -> panic?("this aswell") @ default
-    }
-
-    label inner1 := Inner<String>::Some("i am final")
-    label inner2: Inner<String> := mutable any::Invalidated
-
-    label inner3 := Option<Boolean>::None
-    label inner4: Option<Boolean> := None
-    label test := Test::new("one {open}", 5, mutable None)
-
-    label gotten := match test {
-        case String: string -> {
-            pass some_operation?(string)
-        }
-        case Table: identifier, data -> pass some_operation?(identifier, data)
-        case Template: string -> pass some_operation?(string)
-        case New: identifier -> pass register_new?(identifier)
-        case any: invalid -> panic?("test has invalid data {?}", invalid)
-    }
-
-    if case Template: invalid == &test && maaaybe == true {
-        panic?("test has invalid data {}", invalid)
-    } else case any == &test {
-        panic?("test has invalid data")
-    }
-
-    label maybe: Option<(Integer, Integer)> := None
-    label maybe: Option<(Integer, Integer)> := Some(5, 6)
-
-    label function: Function(test: String) -> Boolean := match maybe {
-        case Some -> pass { return test.is_empty() }
-        case None -> pass { return test.is_full() }
-    }
-
-    label some: Vector<Float<64> := mutable vector?(5.3, 6.1)
-    some.push(110101.001010B)
-
-    label hex: Integer<16> := 5FX
-
-    label result := function()
-
-    test.filter({ return item == 6 })
-
-    label var: Float<64> := 5
-    label var1: Character := mutable clone?(var)
-
-    alias Type := Function(string: String) -> Option<Boolean>
-
-    @label (test: U64, function: Type) := (var, { return (35, Some(string.length == var)) })
-
-    label bool: Boolean := function("some")
-}
-
-label test: Float<32> := 23.0
-
-label vector: Vector<String> := mutable vector?("this", "is", "a", "test")
-
-label other: Option<Boolean> := Some(true)
-
-label map: Map<String, Boolean> := map?("abc", true, "def", false, "ghi", false)
-
-label map: Map<Character, Integer> := mutable map?('a', 1, 's', 2, 'd', 3)
-
-label test: Function() -> String := {
-    return implied "this is a test: {}"
-}
-
-structure Position {
-    public line: Integer
-    public offset: Integer
-    public length: Integer
-}
-
-enumeration Inner<T> {
-    Invalidated((String, Position), Other)
-    Some(T)
+    @ enumerations can be just type identifiers
     None
-}
 
-implement Position {
-
-    public label new: Function() -> Position := {
-        return implied?(1, implied?(1), 1)
-    }
-
-    public label from: Function(line: Integer, offset: Integer, length: Integer) -> Position := {
-        return implied?(line, offset, length)
-    }
-
-    @ is the same as from
-    public label from2: Function(Integer, Integer, Integer) -> Position := (line, offset, length) {
-        return implied?(line, offset, length)
-    }
-}
-
-structure K := Position
-
-public enumeration Option<T> {
+    @ ...but can also hold values
     Some(T)
-    None
+
+    @ ...and can even have values with fields
+    Error{ message: String }
 }
 
-enumeration Q<T> := Option<T>
+@ you can copy a type
+structure CircleCopy := Circle
 
-alias Internal := Option<Boolean>
+@ ...or you can alias it
+alias ErrorOptionString := ErrorOption<String>
 
-label fiftyfifty1: Internal := Internal::None
-label fiftyfifty2: Internal := Internal::Some(true)
+@ option
+label string_maybe0: Option<String> := Some("string")
 
-public label arguments: Function(first: implied String) -> Vec<String> := {
-    label test := implied vector?(first, "two")
-    test[0] := mutable format?("this is the {} string", next) @ valid if first is mutable
-    test[1] := mutable format?("this is also {} true", 56) @ invalid
-    return test
+@ type annotations can also be on the right side of the assignment
+label string_maybe0 := Option<String>::Some("string")
+
+@ ...or they can combine in any way you want
+label string_maybe0: Option<any> := any<String>::Some("string")
+
+@ flow control like match, if, loop, while and iterate can be resolved at compile time if the input is known
+label string_resolved_at_compile_time0 := match boolean0 {
+    case true -> pass "boolean0 was true"
+    case false -> pass "boolean0 was not true"
 }
 
-@ Box<T> -> memory on heap
-@ Cell<T> -> runtime mutablility
-@ Counter<T> -> runtime reference counter (mut and imut)
-
-alias DataCell := Counter<Cell<Data>>
-alias DataMap := HashMap<HashKey, DataCell>
-alias DataList := Vector<DataCell>
-
-public enumeration Data {
-    Map(Map<Data, Data>)
-    List(Vector<Data>)
-    Path(Vector<Data>)
-    Identifier(TreeString)
-    MetaIdentifier(TreeString)
-    String(TreeString)
-    Character(Character)
-    Integer(Integer)
-    Float(Float)
-    Boolean(Boolean)
+@ functions are just generic labels with the function type
+label function_join0: Function(source: Vector<String>) -> String := {
+    return source.iterate_image().join(", ")
 }
 
-public enumeration Token<T> {
-    Keyword(T)
-    Identifier(T)
-    TypeIdentifier(T)
-    Integer(U64)
-    Float(F64)
-    Other
+@ function scopes can also rename the parameters
+label function_join1: Function(source: Vector<String>) -> String := (strings) {
+    return strings.iterate_image().join(", ")
 }
+
+@ you can also omit the names in the type
+label function_join1: Function(Vector<String>) -> String := (strings) {
+    return strings.iterate_image().join(", ")
+}
+
+@ you can even omit the entire type
+label function_join1 := (strings) {
+    return strings.iterate_image().join(", ")
+}
+
+@ since all the parameters are known at compile time, this function call will also be resolved at compile time
+label string_resolved_at_compile_time1 := function_join(vector?("this", "this", "that"))
