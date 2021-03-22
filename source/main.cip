@@ -1,4 +1,71 @@
-public label main: Function(Vector<String>) -> Integer := {
-    print_line?("hello world")
-    return 0
+structure Pointer_Character {
+    address: Integer
 }
+
+structure String {
+    data: Pointer_Character
+    length: Integer
+    capacity: Integer
+}
+
+label default_offset := 10
+label default_value := default_offset + 5
+
+label function_test0: Function(test := default_value) -> Integer := (new) {
+    label some := new
+}
+
+label function_test1: Integer := function_test0("some".length)
+
+@native Character := Integer<32>
+
+@structure String := String
+
+label boolean_test := true
+
+label other_string := "some"
+
+label test_string := mutable "hello, world!"
+
+label string_length := test_string.length
+
+label integer_test: Integer := 6
+
+label character_test := 'n'
+
+label character_test_1 := &character_test
+
+label character_test_0 := character_test_1
+
+label float_test: Float := 5.6
+
+@label byte_test: Byte := 5
+
+namespace test {
+
+    structure Position {
+        file: String
+        source: String
+        index: Integer
+    }
+}
+
+
+@@structure Vector<T> {
+    data: Pointer<T>
+    length: Integer
+    capacity: Integer
+}
+
+native Character := Integer@<32>
+
+structure String := Vector<Character>
+
+label test_string: String := "hello, world!"
+
+extern label printf: Function(Pointer<SignedInteger<8>>, ...)
+
+public label main: Function(Vector<String>) -> Integer := {
+    printf(test_string)
+    return 0
+}@@

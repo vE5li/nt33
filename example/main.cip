@@ -1,3 +1,6 @@
+@ extern function
+@extern label printf: Function(Pointer<SignedInteger<8>>, ...)
+
 @ line comment
 @@ block comment @@
 
@@ -74,13 +77,13 @@ label array := mutable array?("one", "two", mutable "three")
 label tuple_with_annotation: (String, Integer) := ("one", 1)
 
 @ tuples can also have labels that can be set in the type
-label tuple_with_labels: (key: String, value: Integer) := ("one", 1)
+label tuple_with_labels0: (key: String, value: Integer) := ("one", 1)
 
 @ ...or in the instance
-label tuple_with_labels: (key: String, value: Integer) := (key: "one", value: 1)
+label tuple_with_labels1: (key: String, value: Integer) := (key: "one", value: 1)
 
 @ the instance can also overwrite the types field names
-label tuple_with_labels: (key: String, value: Integer) := (new_key: "one", new_value: 1)
+label tuple_with_labels2: (key: String, value: Integer) := (new_key: "one", new_value: 1)
 
 @ labels, structures, enumerations and trais can all be marked as public
 public label string_public := "public string"
@@ -117,10 +120,10 @@ alias ErrorOptionString := ErrorOption<String>
 label string_maybe0: Option<String> := Some("string")
 
 @ type annotations can also be on the right side of the assignment
-label string_maybe0 := Option<String>::Some("string")
+label string_maybe1 := Option<String>::Some("string")
 
 @ ...or they can combine in any way you want
-label string_maybe0: Option<any> := any<String>::Some("string")
+label string_maybe2: Option<any> := any<String>::Some("string")
 
 @ flow control like match, if, loop, while and iterate can be resolved at compile time if the input is known
 label string_resolved_at_compile_time0 := match boolean0 {
@@ -139,14 +142,34 @@ label function_join1: Function(source: Vector<String>) -> String := (strings) {
 }
 
 @ you can also omit the names in the type
-label function_join1: Function(Vector<String>) -> String := (strings) {
+label function_join2: Function(Vector<String>) -> String := (strings) {
     return strings.iterate_image().join(", ")
 }
 
 @ you can even omit the entire type
-label function_join1 := (strings) {
+label function_join3 := (strings) {
     return strings.iterate_image().join(", ")
 }
 
 @ since all the parameters are known at compile time, this function call will also be resolved at compile time
 label string_resolved_at_compile_time1 := function_join(vector?("this", "this", "that"))
+
+@ make platofrm dependent code with regular syntax
+label library := match system_name?() {
+    case "windows" -> pass "some_libraray.dll"
+    case "linux" -> pass "some_libraray.lib"
+}
+
+@ main function
+label main: Function(arguments: Vector<String>) -> Integer := {
+
+    @ higher order functions
+    label assigned_function := match arguments[0] {
+        case "one" -> pass { print_line?("first argument was one") }
+        case "2" -> pass { print_line?("first argument was 2") }
+        case any: other -> pass { print_line?("first argument was {}", other) }
+    }
+    assigned_function()
+
+    return 0
+}
