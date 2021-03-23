@@ -1,2 +1,2 @@
 #!/bin/bash
-seashell -p /usr/share/liquify/data/compiler.data -a $@
+leafsheep -p /usr/share/liquify/data/compiler.data -a $@

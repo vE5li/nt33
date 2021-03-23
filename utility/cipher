@@ -1,2 +1,2 @@
 #!/bin/bash
-seashell -p /usr/share/cipher/data/compiler.data -a "${PWD##*/}" $@
+leafsheep -p /usr/share/cipher/data/compiler.data -a "${PWD##*/}" $@

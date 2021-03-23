@@ -10,11 +10,11 @@ echo -e "\n"
     echo -e "\nseamonkey installed successfully\n"
 #fi
 
-# install seashell
-if [ ! -d seashell ]; then
-    sudo git clone https://github.com/ve5li/seashell &&
-    sudo chown -R "$USER" seashell/
-    echo -e "\nseashell installed successfully\n"
+# install leafsheep
+if [ ! -d leafsheep ]; then
+    sudo git clone https://github.com/ve5li/leafsheep &&
+    sudo chown -R "$USER" leafsheep/
+    echo -e "\nleafsheep installed successfully\n"
 fi
 
 # install shego
@@ -63,17 +63,17 @@ fi
 # install rust if its missing
 if [ ! -d "$HOME/.cargo" ]; then
     echo -e "\ncargo was not found on your system. running rustup..."
-    echo -e "please remember that seashell requires the nightly toolchain to compile\n"
+    echo -e "please remember that leafsheep requires the nightly toolchain to compile\n"
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh &&
     source "$HOME/.cargo/env" &&
     echo -e "\ncargo installed successfully\n"
 fi
 
-# compile seashell
-if [ ! -f /usr/bin/seashell ]; then
-    cd seashell && cargo build &&
-    sudo cp target/debug/seashell /usr/bin/seashell
-    echo -e "\nseashell compiled successfully\n"
+# compile leafsheep
+if [ ! -f /usr/bin/leafsheep ]; then
+    cd leafsheep && cargo build &&
+    sudo cp target/debug/leafsheep /usr/bin/leafsheep
+    echo -e "\nleafsheep compiled successfully\n"
 fi
 
 # return to original working directory
